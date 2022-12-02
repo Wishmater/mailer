@@ -162,7 +162,9 @@ Future<void> close(Connection? connection) async {
 /// [SmtpClientCommunicationException],
 /// [SmtpUnsecureException],
 /// [SocketException],
-Future<void> sendSingleMessage(
+///
+/// returns mail content sent, to save into an .eml
+Future<List<int>> sendSingleMessage(
     Message? message, Connection c, Duration? timeout) async {
   var irMessage = IRMessage(message);
   var envelopeTos = irMessage.envelopeTos;
@@ -183,7 +185,14 @@ Future<void> sendSingleMessage(
   // Finally send the actual mail.
   await c.send('DATA', acceptedRespCodes: ['2', '3']);
 
-  await c.sendStream(irMessage.data(capabilities));
+  final dataStream = irMessage.data(capabilities).asBroadcastStream();
+  final List<int> result = [];
+  dataStream.listen((event) {
+    result.addAll(event);
+  },);
+  await c.sendStream(dataStream);
 
   await c.send('.', acceptedRespCodes: ['2', '3']);
+
+  return result;
 }

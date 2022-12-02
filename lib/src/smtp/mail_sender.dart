@@ -131,8 +131,9 @@ Future<SendReport> _send(
     Message message, Connection connection, Duration? timeout) async {
   var messageSendStart = DateTime.now();
   DateTime messageSendEnd;
+  List<int>? sentData;
   try {
-    await client.sendSingleMessage(message, connection, timeout);
+    sentData = await client.sendSingleMessage(message, connection, timeout);
     messageSendEnd = DateTime.now();
   } catch (e) {
     _logger.warning('Could not send mail.', e);
@@ -141,5 +142,5 @@ Future<SendReport> _send(
   // If sending the message was successful we had to open a connection and
   // `connection.connectionOpenStart` can no longer be null.
   return SendReport(message, connection.connectionOpenStart!, messageSendStart,
-      messageSendEnd);
+      messageSendEnd, sentData);
 }

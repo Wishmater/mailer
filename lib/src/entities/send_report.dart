@@ -5,9 +5,10 @@ class SendReport {
   final DateTime connectionOpened;
   final DateTime messageSendingStart;
   final DateTime messageSendingEnd;
+  final List<int>? sentData;
 
   SendReport(this.mail, this.connectionOpened, this.messageSendingStart,
-      this.messageSendingEnd);
+      this.messageSendingEnd, [this.sentData]);
 
   @override
   String toString() {
