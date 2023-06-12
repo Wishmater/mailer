@@ -20,11 +20,12 @@ class _MailSendTask {
 
 class PersistentConnection {
   Connection? _connection;
+  SmtpServer smtpServer;
 
   final mailSendTasksController = StreamController<_MailSendTask>();
   Stream<_MailSendTask> get mailSendTasks => mailSendTasksController.stream;
 
-  PersistentConnection(SmtpServer smtpServer, {Duration? timeout}) {
+  PersistentConnection(this.smtpServer, {Duration? timeout}) {
     mailSendTasks.listen((_MailSendTask task) async {
       _logger.finer('New mail sending task.  ${task.message?.subject}');
       try {
