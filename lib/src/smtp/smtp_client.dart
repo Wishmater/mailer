@@ -166,6 +166,7 @@ Future<void> close(Connection? connection) async {
 /// returns mail content sent, to save into an .eml
 Future<List<int>> sendSingleMessage(
     Message? message, Connection c, Duration? timeout) async {
+  var watch = Stopwatch()..start();
   var irMessage = IRMessage(message);
   var envelopeTos = irMessage.envelopeTos;
 
@@ -174,25 +175,41 @@ Future<List<int>> sendSingleMessage(
   // Tell the server the envelope from address (might be different to the
   // 'From: ' header!)
   var smtpUtf8 = capabilities.smtpUtf8;
+  print('MAILER -- _SEND -- SEND_SINGLE -- CONFIG DONE PREPERING TO SEND ${watch.elapsed}');
+  watch.reset();
   await c.send(
       'MAIL FROM:<${irMessage.envelopeFrom}>' + (smtpUtf8 ? ' SMTPUTF8' : ''));
+  print('MAILER -- _SEND -- SEND_SINGLE -- envelope from address ${watch.elapsed}');
+  watch.reset();
 
   // Give the server all recipients.
   // TODO what if only one address fails?
   await Future.forEach(
       envelopeTos, (dynamic recipient) => c.send('RCPT TO:<$recipient>'));
+  print('MAILER -- _SEND -- SEND_SINGLE -- all recipients ${watch.elapsed}');
+  watch.reset();
 
   // Finally send the actual mail.
   await c.send('DATA', acceptedRespCodes: ['2', '3']);
 
+  print('MAILER -- _SEND -- SEND_SINGLE -- send actual mail? not body i believe ${watch.elapsed}');
+  watch.reset();
+
   final dataStream = irMessage.data(capabilities).asBroadcastStream();
+  print('MAILER -- _SEND -- SEND_SINGLE -- send actual mail get capabilities ${watch.elapsed}');
+  watch.reset();
+  
   final List<int> result = [];
   dataStream.listen((event) {
     result.addAll(event);
   },);
   await c.sendStream(dataStream);
+  print('MAILER -- _SEND -- SEND_SINGLE -- send actual mail body ${watch.elapsed}');
+  watch.reset();
 
   await c.send('.', acceptedRespCodes: ['2', '3']);
+  print('MAILER -- _SEND -- SEND_SINGLE -- command . ${watch.elapsed}');
+  watch.reset();
 
   return result;
 }

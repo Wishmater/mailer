@@ -37,9 +37,14 @@ class PersistentConnection {
           task.completer.complete(null);
           return;
         }
-
+        print('MAILER -- CREANDO CONEXION');
+        Stopwatch watch = Stopwatch()..start();
         _connection ??= await client.connect(smtpServer, timeout);
+        print('MAILER -- CONEXION CREADA ${watch.elapsed}');
+        watch.reset();
         var report = await _send(task.message!, _connection!, timeout);
+        print('MAILER -- CORREO ENVIADO ${watch.elapsed}');
+        watch.reset();
         task.completer.complete(report);
       } catch (e) {
         _logger.fine('Completing with error: $e');
@@ -63,7 +68,7 @@ class PersistentConnection {
     return mailTask.completer.future
         // `null` is only a valid return value for connection close messages.
         .then((value) => ArgumentError.checkNotNull(value));
-  }
+  } 
 
   /// Throws following exceptions:
   /// [SmtpClientAuthenticationException],
@@ -91,10 +96,20 @@ class PersistentConnection {
 /// Please report other exceptions you encounter.
 Future<SendReport> send(Message message, SmtpServer smtpServer,
     {Duration? timeout}) async {
+  print('MAILER -- ENTRO AL SEND MAIL DE GMAIL?????');
+  Stopwatch watch = Stopwatch()..start();
   _validate(message);
+  print('MAILER -- GMAIL?? -- VALIDADO ${watch.elapsed}');
+  watch.reset();
   var connection = await client.connect(smtpServer, timeout);
+  print('MAILER -- GMAIL?? -- CONECTADO ${watch.elapsed}');
+  watch.reset();
   var sendReport = await _send(message, connection, timeout);
+  print('MAILER -- GMAIL?? -- MANDADO ${watch.elapsed}');
+  watch.reset();
   await client.close(connection);
+  print('MAILER -- GMAIL?? -- CERRADA CONEXION ${watch.elapsed}');
+  watch.reset();
   return sendReport;
 }
 
@@ -134,7 +149,11 @@ Future<SendReport> _send(
   DateTime messageSendEnd;
   List<int>? sentData;
   try {
+    print('MAILER -- ENTRO AL _SEND');
+    var watch = Stopwatch()..start();
     sentData = await client.sendSingleMessage(message, connection, timeout);
+    print('MAILER -- _SEND -- SENDED SINGLE MESSAGE ${watch.elapsed}');
+    watch.reset();
     messageSendEnd = DateTime.now();
   } catch (e) {
     _logger.warning('Could not send mail.', e);
