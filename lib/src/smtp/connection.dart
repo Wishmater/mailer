@@ -44,6 +44,16 @@ class Connection {
 
   bool get isSecure => _socket != null && _socket is SecureSocket;
 
+  bool get isClosed {
+    try {
+      if (_socket == null) return true;
+      _socket!.address;
+      return false;
+    } catch (e) {
+      return true;
+    }
+  }
+
   Future sendStream(Stream<List<int>> s) => _socket!.addStream(s);
 
   /// Returns the next message from server.  An exception is thrown if

@@ -37,8 +37,9 @@ class PersistentConnection {
           task.completer.complete(null);
           return;
         }
-
-        _connection ??= await client.connect(smtpServer, timeout);
+        if (_connection?.isClosed ?? true) {
+          _connection = await client.connect(smtpServer, timeout);
+        }
         var report = await _send(task.message!, _connection!, timeout);
         task.completer.complete(report);
       } catch (e) {
