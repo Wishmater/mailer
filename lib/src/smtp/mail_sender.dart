@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:mailer/src/smtp/validator.dart';
@@ -37,10 +38,15 @@ class PersistentConnection {
           task.completer.complete(null);
           return;
         }
-        if (_connection?.isClosed ?? true) {
+        _connection ??= await client.connect(smtpServer, timeout);
+        SendReport report;
+        try {
+          report = await _send(task.message!, _connection!, timeout);
+        } on SocketException {
           _connection = await client.connect(smtpServer, timeout);
+          report = await _send(task.message!, _connection!, timeout);
         }
-        var report = await _send(task.message!, _connection!, timeout);
+         
         task.completer.complete(report);
       } catch (e) {
         _logger.fine('Completing with error: $e');
@@ -57,6 +63,7 @@ class PersistentConnection {
   /// Please report other exceptions you encounter.
   Future<SendReport> send(Message message) {
     _logger.finer('Adding message to mailSendQueue');
+    print('MECAGO EN LA MADRE DE DIOSSS');
     var mailTask = _MailSendTask()
       ..message = message
       ..completer = Completer();
