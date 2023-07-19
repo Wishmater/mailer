@@ -55,6 +55,8 @@ class PersistentConnection {
     });
   }
 
+  
+
   /// Throws following exceptions:
   /// [SmtpClientAuthenticationException],
   /// [SmtpUnsecureException],
@@ -87,6 +89,13 @@ class PersistentConnection {
       await closeTask.completer.future;
     } finally {
       await mailSendTasksController.close();
+    }
+  }
+
+  // TODO Dado el raro disenno de la clase para tomar el timeout lo deje omitido por ahora. Tal vez se deberia poner el timeout como un campo de la clase o poner el open en un Task y manejarlo adecuadamente en el listener del constructor
+  Future<void> open({bool forceOpen = false}) async {
+    if (forceOpen || _connection == null) {
+      _connection = await client.connect(smtpServer, null);
     }
   }
 }
