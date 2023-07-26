@@ -98,6 +98,17 @@ class PersistentConnection {
       _connection = await client.connect(smtpServer, null);
     }
   }
+
+  // Carefull, the current mail transaction is to be aborted.
+  Future<bool> isClose() async {
+    try {
+      if (_connection == null) return false;
+      await client.sendRSET(_connection!);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 /// Throws following exceptions:
