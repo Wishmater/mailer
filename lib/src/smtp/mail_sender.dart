@@ -100,7 +100,7 @@ class PersistentConnection {
   }
 
   // Carefull, the current mail transaction is to be aborted.
-  Future<bool> isClose() async {
+  Future<bool> isOpen() async {
     try {
       if (_connection == null) return false;
       await client.sendRSET(_connection!);
