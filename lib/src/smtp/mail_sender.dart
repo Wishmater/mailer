@@ -65,7 +65,6 @@ class PersistentConnection {
   /// Please report other exceptions you encounter.
   Future<SendReport> send(Message message) {
     _logger.finer('Adding message to mailSendQueue');
-    print('MECAGO EN LA MADRE DE DIOSSS');
     var mailTask = _MailSendTask()
       ..message = message
       ..completer = Completer();
