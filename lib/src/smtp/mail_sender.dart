@@ -40,23 +40,16 @@ class PersistentConnection {
         }
         SendReport report;
         try {
-          print('MAILER LIB: Conectando');
           _connection ??= await client.connect(smtpServer, timeout);
-          print('MAILER LIB: Va a mandar');
           report = await _send(task.message!, _connection!, timeout);
-          print('MAILER LIB: Mandado');
-        } on SocketException {
+        } catch(e) {
           try {
-            print('MAILER LIB: Conectando 2');
             _connection = await client.connect(smtpServer, timeout);
-          } on SocketException {
+          } catch(e) {
             await Future.delayed(Duration(seconds: 1));
-            print('MAILER LIB: Conectando 3');
             _connection = await client.connect(smtpServer, timeout);
           }
-          print('MAILER LIB: Va a mandar 2');
           report = await _send(task.message!, _connection!, timeout);
-          print('MAILER LIB: Mandado 2');
         }
          
         task.completer.complete(report);
