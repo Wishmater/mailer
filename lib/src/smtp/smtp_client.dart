@@ -143,7 +143,7 @@ Future<Connection> connect(SmtpServer smtpServer, Duration? timeout) async {
 }
 
 Future<void> sendRSET(Connection connection) async {
-  await connection.send('RSET'); // TODO check if only needs acceptedRespCodes 2 
+  await connection.send('RSET', waitForResponse: false, acceptedRespCodes: ['250']);
 }
 
 Future<void> close(Connection? connection) async {
