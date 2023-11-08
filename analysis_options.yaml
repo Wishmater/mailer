@@ -2,6 +2,7 @@ analyzer:
   strong-mode:
     implicit-casts: false
   errors:
+    unawaited_futures: error
     todo: ignore
   exclude:
     - flutter/**
@@ -10,6 +11,7 @@ analyzer:
 
 linter:
   rules:
+    - unawaited_futures
     - avoid_empty_else
     - cancel_subscriptions
     - close_sinks
