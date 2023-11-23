@@ -108,7 +108,7 @@ class PersistentConnection {
   Future<bool> isOpen() async {
     try {
       if (_connection == null) return false;
-      await client.sendRSET(_connection!);
+      await client.sendNOOP(_connection!);
       return true;
     } catch (e) {
       return false;

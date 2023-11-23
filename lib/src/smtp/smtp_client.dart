@@ -142,8 +142,8 @@ Future<Connection> connect(SmtpServer smtpServer, Duration? timeout) async {
   }
 }
 
-Future<void> sendRSET(Connection connection) async {
-  await connection.send('RSET', waitForResponse: false, acceptedRespCodes: ['250']);
+Future<void> sendNOOP(Connection connection) async {
+  await connection.send('NOOP', waitForResponse: false, acceptedRespCodes: ['250']);
 }
 
 Future<void> close(Connection? connection) async {
