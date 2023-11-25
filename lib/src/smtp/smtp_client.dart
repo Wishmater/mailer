@@ -143,7 +143,7 @@ Future<Connection> connect(SmtpServer smtpServer, Duration? timeout) async {
 }
 
 Future<void> sendNOOP(Connection connection) async {
-  await connection.send('NOOP', waitForResponse: false, acceptedRespCodes: ['250']);
+  await connection.send('NOOP', acceptedRespCodes: ['250']);
 }
 
 Future<void> close(Connection? connection) async {
